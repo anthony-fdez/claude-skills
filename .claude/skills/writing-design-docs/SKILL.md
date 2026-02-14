@@ -36,13 +36,6 @@ Making systems explicit so they can scale without tribal knowledge.
 4. **Note breaking changes** - Call out if the change affects existing behavior
 5. **Update related docs** - If change affects multiple systems, update all relevant docs
 
-### Packages with Documentation
-
-| Package                  | Documentation                     |
-| ------------------------ | --------------------------------- |
-| `src/lib/google-sheets/` | `src/lib/google-sheets/README.md` |
-| `src/lib/i18n/`          | `src/lib/i18n/README.md`          |
-
 ---
 
 ## Documentation Taxonomy
@@ -94,12 +87,13 @@ Each feature gets a single file: `docs/features/{feature-name}/{feature-name}.md
 
 Every feature doc follows this structure:
 
-| Section  | Type                 | What it captures                                                    |
-| -------- | -------------------- | ------------------------------------------------------------------- |
-| Purpose  | Intent (WHO + WHY)   | "Prevent duplicate orders from re-uploads or webhook retries"       |
-| Context  | Rationale (optional) | Risks avoided, standards followed, alternatives rejected            |
-| Behavior | Outcomes (WHAT)      | "Customer uploads same CSV twice → only one order gets processed"   |
-| Verify   | Test steps (HOW)     | Page, endpoint, or DB check with what to confirm                    |
+| Section   | Type                 | What it captures                                                      |
+| --------- | -------------------- | --------------------------------------------------------------------- |
+| Purpose   | Intent (WHO + WHY)   | "Prevent duplicate orders from re-uploads or webhook retries"         |
+| Context   | Rationale (optional) | Risks avoided, standards followed, alternatives rejected              |
+| Behavior  | Outcomes (WHAT)      | "Customer uploads same CSV twice → only one order gets processed"     |
+| Verify    | Test steps (HOW)     | Page, endpoint, or DB check with what to confirm                      |
+| Key Files | AI context (WHERE)   | File paths, search terms, and patterns for finding the implementation |
 
 **Format**:
 
@@ -134,6 +128,16 @@ Every feature doc follows this structure:
    - Confirm: What to check
 
 ---
+
+## Key Files
+
+| File                                      | Purpose            |
+| ----------------------------------------- | ------------------ |
+| `src/components/Domain/Component.tsx`     | Main UI component  |
+| `src/lib/hooks/use-feature-query.ts`      | Data fetching hook |
+| `src/lib/utils/domain/helper-function.ts` | Core logic         |
+
+**Search terms**: `featureFlagName`, `useFeatureHook`, `FeatureComponent`
 ```
 
 ### Writing Good Behaviors
@@ -181,6 +185,29 @@ Verify steps reference which behaviors they cover: "Covers B1, B3"
 - **Page**: `/route/path` — what to do, what to confirm
 - **POST/GET/etc**: `/api/endpoint` — request shape, response shape
 - **DB**: table/query — what to check
+
+### Key Files Section
+
+Every feature doc ends with a `## Key Files` section. This section is for **AI discoverability** — it helps tools like Claude Code find the implementation quickly.
+
+**What to include:**
+
+| Category       | Examples                                              |
+| -------------- | ----------------------------------------------------- |
+| Components     | Main UI component(s) that render this feature         |
+| Hooks          | React Query hooks, custom hooks driving behavior      |
+| Services/Utils | API call functions, pure logic functions               |
+| Types          | Zod schemas, TypeScript types specific to the feature |
+| Config         | Feature flags, constants, environment config          |
+
+**Search terms**: List function names, hook names, component names, feature flag names, or config keys that uniquely identify this feature in the codebase. These help `grep` find the right files fast.
+
+**Rules:**
+
+1. **Only list files central to the feature** — not every file that touches it
+2. **One-line purpose** per file — what role it plays, not what it does internally
+3. **Use actual paths** — verify files exist before listing them
+4. **Include search terms** — unique identifiers an AI can grep for to find related code
 
 ---
 
@@ -291,4 +318,17 @@ Handles payment failures during checkout by preserving cart state and allowing u
    - **Page**: `/checkout/payment`
    - Fail payment with card, switch to alternate method, complete checkout
    - Confirm: Order created successfully with alternate payment method
+
+---
+
+## Key Files
+
+| File                                              | Purpose                            |
+| ------------------------------------------------- | ---------------------------------- |
+| `src/components/Checkout/CheckoutPayment.tsx`     | Payment section orchestration      |
+| `src/lib/hooks/use-handle-submit-order.ts`        | Order submission and error handling |
+| `src/components/_ui/ErrorAlert.tsx`               | Error display component            |
+| `src/store/useGlobalStore.ts` (`cart` slice)      | Cart persistence via localStorage  |
+
+**Search terms**: `processOrderError`, `useHandleSubmitOrder`, `ErrorAlert`
 ```
