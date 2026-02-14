@@ -18,19 +18,20 @@ Cherry-pick individual skills or commands as needed — each is a standalone mar
 .claude/
 ├── skills/           # 17 skills that guide AI behavior
 │   ├── ask-questions-if-unspecified/
+│   ├── creating-packages/
 │   ├── designing-apis/
-│   ├── documenting-systems/
 │   ├── frontend-design/
 │   ├── handling-errors/
 │   ├── managing-state/
-│   ├── organizing-files/
-│   ├── planning-features/
-│   ├── writing-app-readmes/
+│   ├── planning/
+│   ├── securing-code/
+│   ├── writing-design-docs/
 │   ├── writing-forms/
 │   ├── writing-logs/
 │   ├── writing-nextjs/
 │   ├── writing-react/
 │   ├── writing-react-query/
+│   ├── writing-skills/
 │   ├── writing-tests/
 │   └── writing-typescript/
 └── commands/         # Slash commands
@@ -46,13 +47,13 @@ Cherry-pick individual skills or commands as needed — each is a standalone mar
 
 | Category     | Skills                                                                                                         |
 | ------------ | -------------------------------------------------------------------------------------------------------------- |
-| **Planning** | `planning-features`, `ask-questions-if-unspecified`                                                            |
+| **Planning** | `planning`, `ask-questions-if-unspecified`                                                                     |
 | **Frontend** | `writing-react`, `writing-nextjs`, `writing-forms`, `managing-state`, `writing-react-query`, `frontend-design` |
-| **Backend**  | `designing-apis`, `writing-logs`                                                                               |
+| **Backend**  | `designing-apis`, `writing-logs`, `creating-packages`                                                          |
 | **Language** | `writing-typescript`                                                                                           |
 | **Testing**  | `writing-tests`                                                                                                |
-| **Quality**  | `handling-errors`, `organizing-files`                                                                          |
-| **Docs**     | `documenting-systems`, `writing-app-readmes`                                                                   |
+| **Quality**  | `handling-errors`, `securing-code`                                                                             |
+| **Docs**     | `writing-design-docs`, `writing-skills`                                                                        |
 
 ## Commands
 

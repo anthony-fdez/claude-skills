@@ -21,7 +21,7 @@ Summarize what the branch does in 2-3 sentences.
 
 Search for design docs in common locations:
 
-- `docs/systems/*.md`
+- `docs/architecture/*.md`
 - `docs/features/**/*.md`
 - `docs/*.md`
 - `apps/*/docs/*.md`
