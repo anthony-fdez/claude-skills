@@ -34,6 +34,7 @@ Cherry-pick individual skills or commands as needed — each is a standalone mar
 │   ├── writing-tests/
 │   └── writing-typescript/
 └── commands/         # Slash commands
+    ├── create-pr.md
     └── pr-description.md
 ```
 
@@ -53,5 +54,5 @@ Cherry-pick individual skills or commands as needed — each is a standalone mar
 
 | Command           | Description                                                     |
 | ----------------- | --------------------------------------------------------------- |
-| `/pr-description` | Generates a structured PR description from current repo changes |
-# ai-skills
+| `/pr-description` | Generates a structured PR description and writes it to a file   |
+| `/create-pr`      | Creates a GitHub PR with title, description, and branch target  |
