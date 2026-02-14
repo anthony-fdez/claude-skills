@@ -16,6 +16,8 @@ Cherry-pick individual skills or commands as needed — each is a standalone mar
 
 ```
 .claude/
+├── rules/            # Coding conventions
+│   └── file-naming.md
 ├── skills/           # 17 skills that guide AI behavior
 │   ├── ask-questions-if-unspecified/
 │   ├── creating-packages/

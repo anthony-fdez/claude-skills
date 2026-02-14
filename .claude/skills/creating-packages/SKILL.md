@@ -186,7 +186,7 @@ Why: Consistent naming makes types discoverable. Separating config from args cla
 Declare all types in the same file as the function they serve:
 
 ```
-packages/hydra-client/src/
+packages/payments-client/src/
   get-customer.ts      # Contains GetCustomerArgs, GetCustomerConfig, GetCustomerResponse + function
   create-order.ts      # Contains CreateOrderArgs, CreateOrderConfig, CreateOrderResponse + function
   types/
@@ -229,7 +229,7 @@ Don't create derived types in the client package. Consumers use indexed access t
 
 ```typescript
 // Consumer code — derive from API response
-import type { GetProductsResponse } from '@scope/cosmic-client'
+import type { GetProductsResponse } from '@scope/cms-client'
 
 type Product = GetProductsResponse['items'][number]
 type Policy = NonNullable<Product['policies']>[number]

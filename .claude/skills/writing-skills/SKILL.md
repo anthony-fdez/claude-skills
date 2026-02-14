@@ -99,7 +99,7 @@ Skills should document patterns **specific to this codebase**, not general progr
 - How we use our logger (`@/lib/logger`) with DataDog tags
 - Our Zustand store slice conventions
 - Our API route error response pattern (`createErrorResponse`)
-- Service-specific patterns (Hydra, Cosmic, Jeeves)
+- Service-specific patterns (e.g., payment API, CMS integrations)
 
 **Not worth documenting:**
 

@@ -16,9 +16,7 @@ pages/
 ├── index.tsx       # Home page
 ├── 404.tsx         # Custom 404 page
 ├── api/            # API routes
-├── [alpha3]/       # Dynamic country routes
-├── reset/          # Application reset
-└── unsupported/    # Unsupported market
+└── [locale]/       # Dynamic locale routes
 ```
 
 ## Standard Page Pattern
@@ -79,22 +77,22 @@ export const getStaticProps: GetStaticProps = async () => {
 ### Dynamic Routes with getStaticPaths
 
 ```tsx
-// [alpha3]/index.tsx
+// [locale]/index.tsx
 export const getStaticPaths: GetStaticPaths = async () => {
   return {
-    paths: countries.map((country) => ({
-      params: { alpha3: country.code },
+    paths: locales.map((locale) => ({
+      params: { locale: locale.code },
     })),
     fallback: 'blocking', // Generate missing pages on-demand
   }
 }
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
-  const country = params?.alpha3 as string
-  const data = await fetchCountryData(country)
+  const locale = params?.locale as string
+  const data = await fetchLocaleData(locale)
 
   return {
-    props: { data, country },
+    props: { data, locale },
     revalidate: 3600,
   }
 }
@@ -313,10 +311,10 @@ const ProductPage = () => {
 ### Locale from URL
 
 ```tsx
-// Middleware sets locale based on [alpha3] param
+// Middleware sets locale based on [locale] param
 // Access via useTranslate() hook
 const translate = useTranslate()
-const { locale, alpha2 } = translate
+const { locale } = translate
 ```
 
 ## Analytics Integration
@@ -324,7 +322,7 @@ const { locale, alpha2 } = translate
 ```tsx
 // Pages automatically track page views
 // Add custom events:
-import { track } from '@/lib/hooks/mixpanel'
+import { track } from '@/lib/hooks/analytics'
 
 const handlePurchase = () => {
   track('Purchase Completed', {

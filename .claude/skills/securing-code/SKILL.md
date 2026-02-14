@@ -35,7 +35,7 @@ import { logger } from '@/lib/logger'
 
 // GOOD: Log only safe metadata
 logger.info('[Checkout] Payment processed', {
-  tags: { source: 'hydra', operation: 'create-order' },
+  tags: { source: 'payments-api', operation: 'create-order' },
   metadata: { orderId: order.id, amount: order.total },
 })
 
@@ -87,7 +87,7 @@ Why: Zod at I/O boundaries catches malformed data before it enters the system. I
 
 - Stack traces
 - Database queries or connection strings
-- Internal API error codes from services (Hydra, Jeeves)
+- Internal API error codes from external services
 - File paths or server configuration
 - Service versions
 
@@ -102,7 +102,7 @@ return res.status(400).json(createErrorResponse({
 
 // BAD: Leaking internals
 return res.status(500).json({
-  error: `Hydra API error: ${error.message}`,
+  error: `External API error: ${error.message}`,
   stack: error.stack,
 })
 ```
@@ -111,7 +111,7 @@ return res.status(500).json({
 
 ```typescript
 logger.error('[Checkout] Order creation failed', {
-  tags: { source: 'hydra', operation: 'create-order', status: 'error' },
+  tags: { source: 'payments-api', operation: 'create-order', status: 'error' },
   metadata: { orderId, durationMs },
   error,
 })

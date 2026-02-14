@@ -55,9 +55,9 @@ const FeaturedProducts = () => {
 
 ```tsx
 // ✅ Good: Import types from the action/library
-import type { CustomerByHrefArgs } from '@checkout/hydra-client/types'
+import type { CustomerByHrefArgs } from '@checkout/payments-client/types'
 import { useQuery } from '@tanstack/react-query'
-import { getCustomerByHref } from '@/app/actions/hydra/get-customer-by-href.action'
+import { getCustomerByHref } from '@/app/actions/payments/get-customer-by-href.action'
 
 export const useCustomer = ({ href }: CustomerByHrefArgs) => {
   return useQuery({
@@ -527,10 +527,10 @@ Specify the error type in the mutation generic so callbacks and error handling g
 
 ```tsx
 // ✅ Good: Explicit error type
-useMutation<CreateOrderResponse, HydraError, CreateOrderArgs>({
+useMutation<CreateOrderResponse, ApiError, CreateOrderArgs>({
   mutationFn: createOrder,
   onError: (error) => {
-    // error is typed as HydraError
+    // error is typed as ApiError
     logger.error('[Checkout] Order failed', { error })
   },
 })

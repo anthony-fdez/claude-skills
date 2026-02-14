@@ -47,8 +47,8 @@ src/
 │   │   └── {domain}/                       # Other server-only domains
 │   │
 │   ├── services/                           # External API integrations (existing)
-│   │   ├── hydra/
-│   │   ├── cosmic/
+│   │   ├── payments/
+│   │   ├── cms/
 │   │   └── ...
 │   │
 │   └── api/                                # Shared API utilities

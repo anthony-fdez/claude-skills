@@ -19,7 +19,7 @@ globs: ["src/**"]
 | Component | `PascalCase.tsx`                   | `ProductCard.tsx`            |
 | Hook      | `use-{descriptive-name}.ts`        | `use-cart-totals.ts`         |
 | Function  | `{action}-{resource}.ts`           | `format-price-display.ts`    |
-| Service   | `{service}-{action}-{resource}.ts` | `cosmic-get-product-data.ts` |
+| Service   | `{service}-{action}-{resource}.ts` | `stripe-get-payment-data.ts` |
 | Type      | `{domain}.types.ts`                | `checkout.types.ts`          |
 | Constant  | `{domain}.constants.ts`            | `shipping.constants.ts`      |
 | Folder    | `kebab-case/`                      | `address-restrictions/`      |
@@ -46,7 +46,7 @@ lib/utils/address-restrictions/
 
 - `folder/index.tsx` — Use `PascalCase.tsx` directly
 - Generic names that rely on folder context (`utils/format.ts` → `format-price-display.ts`)
-- Deeply nested folders (`services/cosmic/products/helpers/`)
+- Deeply nested folders (`services/stripe/payments/helpers/`)
 - Generic groupings (`utils/helpers/`, `common/shared/`)
 - Type-only folders (`types/`, `interfaces/`)
 - camelCase or PascalCase folder names
