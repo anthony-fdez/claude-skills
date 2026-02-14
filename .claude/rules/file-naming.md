@@ -16,12 +16,12 @@ globs: ["src/**"]
 
 | Type      | Pattern                            | Example                      |
 | --------- | ---------------------------------- | ---------------------------- |
-| Component | `PascalCase.tsx`                   | `ProductCard.tsx`            |
-| Hook      | `use-{descriptive-name}.ts`        | `use-cart-totals.ts`         |
-| Function  | `{action}-{resource}.ts`           | `format-price-display.ts`    |
-| Service   | `{service}-{action}-{resource}.ts` | `stripe-get-payment-data.ts` |
-| Type      | `{domain}.types.ts`                | `checkout.types.ts`          |
-| Constant  | `{domain}.constants.ts`            | `shipping.constants.ts`      |
+| Component | `PascalCase.tsx`                   | `StatusBadge.tsx`            |
+| Hook      | `use-{descriptive-name}.ts`        | `use-debounced-search.ts`    |
+| Function  | `{action}-{resource}.ts`           | `format-date-display.ts`     |
+| Service   | `{service}-{action}-{resource}.ts` | `github-get-repo-data.ts`    |
+| Type      | `{domain}.types.ts`                | `notification.types.ts`      |
+| Constant  | `{domain}.constants.ts`            | `locale.constants.ts`        |
 | Folder    | `kebab-case/`                      | `address-restrictions/`      |
 
 ## When Nesting Is Acceptable
@@ -45,8 +45,8 @@ lib/utils/address-restrictions/
 ## Avoid
 
 - `folder/index.tsx` — Use `PascalCase.tsx` directly
-- Generic names that rely on folder context (`utils/format.ts` → `format-price-display.ts`)
-- Deeply nested folders (`services/stripe/payments/helpers/`)
+- Generic names that rely on folder context (`utils/format.ts` → `format-date-display.ts`)
+- Deeply nested folders (`services/github/repos/helpers/`)
 - Generic groupings (`utils/helpers/`, `common/shared/`)
 - Type-only folders (`types/`, `interfaces/`)
 - camelCase or PascalCase folder names
