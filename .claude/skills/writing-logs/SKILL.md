@@ -13,8 +13,8 @@ Patterns for structured logging with DataDog integration.
 - [Message Format](#message-format)
 - [Log Params Structure](#log-params-structure)
 - [Standardized Datadog Payload](#standardized-datadog-payload)
-- [Market Parameter](#market-parameter)
-- [Mode Slug Parameter](#mode-slug-parameter)
+- [Locale Parameter](#locale-parameter)
+- [Variant Parameter](#variant-parameter)
 - [Tag Ordering](#tag-ordering)
 - [Available Tags](#available-tags)
 - [Complete Example](#complete-example)
@@ -59,11 +59,11 @@ All log messages MUST start with a context prefix in square brackets:
 logger.info('[Products Grid] Build completed', { ... })
 logger.error('[Product Page] Data fetch failed', { ... })
 logger.warn('[Build: Categories] Falling back to defaults', { ... })
-logger.info('[Build: Retry] cosmic:getProduct succeeded after 2 retries', { ... })
+logger.info('[Build: Retry] cms:getProduct succeeded after 2 retries', { ... })
 
 // ❌ Bad: No context prefix
 logger.info('Products grid page build completed', { ... })
-logger.error('Error fetching cosmic modes:', { ... })
+logger.error('Error fetching CMS modes:', { ... })
 ```
 
 **Context naming conventions:**
@@ -79,10 +79,10 @@ logger.error('Error fetching cosmic modes:', { ... })
 
 ```typescript
 type LogParams = {
-  market?: SupportedAlpha2CountryCode | null // Alpha2 country code (e.g., 'US'), defaults to null
-  modeSlug?: string | null // Mode slug (e.g., 'ufeelgreat'), null for default shop
+  locale?: string | null // Locale code (e.g., 'en-US'), defaults to null
+  variant?: string | null // Site variant (e.g., 'premium'), null for default
   tags?: LogTag[] // Array of typed tags, defaults to []
-  source?: LogSource // 'page-build' | 'cosmic' | 'jeeves' | 'rosetta' | 'hydra' | 'client'
+  source?: LogSource // 'page-build' | 'cms' | 'backend-api' | 'i18n' | 'payments-api' | 'client'
   operation?: string // Operation name for debugging
   metadata?: Record<string, unknown> // Custom data (durationMs, slugs, etc.)
   error?: unknown // Error object - will be serialized
@@ -91,8 +91,8 @@ type LogParams = {
 
 All fields are optional. The params object itself is also optional. The logger automatically:
 
-- Defaults `market` to `null` if not provided
-- Defaults `modeSlug` to `null` if not provided
+- Defaults `locale` to `null` if not provided
+- Defaults `variant` to `null` if not provided
 - Prepends `env` and `phase` tags automatically
 
 ---
@@ -104,8 +104,8 @@ All logs are sent to Datadog with a **fixed, predictable structure**. This makes
 ```typescript
 // What gets sent to Datadog (context object)
 type LogContext = {
-  market: string | null // Always at @context.market
-  modeSlug: string | null // Always at @context.modeSlug
+  locale: string | null // Always at @context.locale
+  variant: string | null // Always at @context.variant
   source: LogSource | null // Always at @context.source
   operation: string | null // Always at @context.operation
   operationStatus: string | null // Extracted from status:* tag
@@ -131,9 +131,9 @@ type LogContext = {
 ```typescript
 // ✅ Good: Data in correct locations
 logger.error('[Product Page] Fetch failed', {
-  market: alpha2,
-  modeSlug,
-  source: 'cosmic', // → @context.source
+  locale,
+  variant,
+  source: 'cms', // → @context.source
   operation: 'getProduct', // → @context.operation
   metadata: { productSlug }, // → @context.metadata.productSlug
   error: fetchError, // → @context.error.{name,message,stack,httpStatus}
@@ -142,7 +142,7 @@ logger.error('[Product Page] Fetch failed', {
 // ❌ Bad: Don't put source/operation in metadata
 logger.error('[Product Page] Fetch failed', {
   metadata: {
-    source: 'cosmic', // Wrong! Use params.source instead
+    source: 'cms', // Wrong! Use params.source instead
     productSlug,
   },
 })
@@ -150,42 +150,42 @@ logger.error('[Product Page] Fetch failed', {
 
 ---
 
-## Market Parameter
+## Locale Parameter
 
-The `market` parameter uses Alpha2 country codes (e.g., 'US', 'GB', 'DE'):
+The `locale` parameter identifies the user's locale (e.g., 'en-US', 'de-DE'):
 
 ```typescript
-// ✅ Good: Market as a parameter
+// ✅ Good: Locale as a parameter
 logger.info('[Product Page] Product fetched', {
-  market: alpha2, // Alpha2 code like 'US'
+  locale, // Locale code like 'en-US'
   tags: [PAGE.PRODUCT, STATUS.SUCCESS],
 })
 
-// ✅ Good: No market (defaults to null)
+// ✅ Good: No locale (defaults to null)
 logger.info('[App] Initialized')
 
-// ❌ Bad: Don't create market tags manually
+// ❌ Bad: Don't create locale tags manually
 logger.info('[Product Page] Product fetched', {
-  tags: ['market:us', PAGE.PRODUCT], // Wrong! Market goes in params
+  tags: ['locale:en-us', PAGE.PRODUCT], // Wrong! Locale goes in params
 })
 ```
 
 ---
 
-## Mode Slug Parameter
+## Variant Parameter
 
-The `modeSlug` identifies which mode/site variant the log is for:
+The `variant` identifies which site variant the log is for:
 
 ```typescript
-// ✅ Good: Include modeSlug when available
+// ✅ Good: Include variant when available
 logger.info('[Product Page] Build completed', {
-  market: alpha2,
-  modeSlug: 'ufeelgreat', // or null for default shop
+  locale,
+  variant: 'premium', // or null for default
   tags: [GROUP.PRODUCT_BUILD, STATUS.SUCCESS],
 })
 
-// Useful for filtering logs by mode in DataDog:
-// @context.modeSlug:ufeelgreat
+// Useful for filtering logs by variant in DataDog:
+// @context.variant:premium
 ```
 
 ---
@@ -199,7 +199,7 @@ Tags follow this order for consistent DataDog filtering:
 2. phase      (automatic - prepended by logger)
 3. group      (feature group: product-build, apple-pay, auth, revalidation)
 4. page       (which page: product, products-grid, category)
-5. source     (which service: cosmic, jeeves, hydra, rosetta)
+5. source     (which service: cms, backend-api, payments-api, i18n)
 6. operation  (what action: fetch-product, fetch-pricing)
 7. retry      (retry state: attempt, success, exhausted)
 8. action     (special action: client-fallback, error-boundary)
@@ -220,23 +220,23 @@ const { GROUP, PAGE, SOURCE, OPERATION, STATUS } = logger.tags
 
 // ✅ Good: Tags in correct order, status last
 logger.info('[Product Page] Data fetch started', {
-  market: alpha2,
-  modeSlug,
+  locale,
+  variant,
   tags: [
     GROUP.PRODUCT_BUILD,
     PAGE.PRODUCT,
-    SOURCE.COSMIC,
+    SOURCE.CMS,
     OPERATION.FETCH_PRODUCT,
   ],
 })
 
 logger.error('[Product Page] Fetch failed', {
-  market: alpha2,
-  modeSlug,
+  locale,
+  variant,
   tags: [
     GROUP.PRODUCT_BUILD,
     PAGE.PRODUCT,
-    SOURCE.COSMIC,
+    SOURCE.CMS,
     OPERATION.FETCH_PRODUCT,
     STATUS.ERROR, // Status always last
   ],
@@ -245,7 +245,7 @@ logger.error('[Product Page] Fetch failed', {
 
 // ❌ Bad: Tags out of order
 logger.error('[Product Page] Fetch failed', {
-  tags: [STATUS.ERROR, SOURCE.COSMIC, PAGE.PRODUCT], // Wrong order!
+  tags: [STATUS.ERROR, SOURCE.CMS, PAGE.PRODUCT], // Wrong order!
 })
 ```
 
@@ -270,7 +270,7 @@ const {
 
 // Group (feature area)
 GROUP.PRODUCT_BUILD // 'group:product-build'
-GROUP.HYDRA_API // 'group:hydra-api'
+GROUP.EXTERNAL_API // 'group:external-api'
 GROUP.APPLE_PAY // 'group:apple-pay'
 GROUP.AUTH // 'group:auth'
 GROUP.CLIENT_ERROR // 'group:client-error'
@@ -283,10 +283,10 @@ PAGE.CATEGORY // 'page:category'
 
 // Source Service
 SOURCE.PAGE_BUILD // 'source:page-build'
-SOURCE.COSMIC // 'source:cosmic'
-SOURCE.JEEVES // 'source:jeeves'
-SOURCE.ROSETTA // 'source:rosetta'
-SOURCE.HYDRA // 'source:hydra'
+SOURCE.CMS // 'source:cms'
+SOURCE.BACKEND // 'source:backend-api'
+SOURCE.I18N // 'source:i18n'
+SOURCE.PAYMENTS // 'source:payments-api'
 SOURCE.CLIENT // 'source:client'
 
 // Operation
@@ -324,8 +324,7 @@ const { GROUP, PAGE, SOURCE, OPERATION, STATUS } = logger.tags
 export const getProductPageData = async ({
   productSlug,
   locale,
-  alpha2,
-  modeSlug,
+  variant,
 }) => {
   const context = { productSlug, locale }
   const startTime = Date.now()
@@ -333,17 +332,17 @@ export const getProductPageData = async ({
   try {
     const product = await fetchProduct(productSlug)
 
-    logger.info('[Product Page] Cosmic fetch completed', {
-      market: alpha2,
-      modeSlug,
+    logger.info('[Product Page] CMS fetch completed', {
+      locale,
+      variant,
       tags: [
         GROUP.PRODUCT_BUILD,
         PAGE.PRODUCT,
-        SOURCE.COSMIC,
+        SOURCE.CMS,
         OPERATION.FETCH_PRODUCT,
         STATUS.SUCCESS,
       ],
-      source: LOG_SOURCE.COSMIC,
+      source: LOG_SOURCE.CMS,
       operation: 'getProductPageData',
       metadata: {
         ...context,
@@ -354,17 +353,17 @@ export const getProductPageData = async ({
 
     return { data: product, error: null }
   } catch (error) {
-    logger.error('[Product Page] Failed to fetch from Cosmic', {
-      market: alpha2,
-      modeSlug,
+    logger.error('[Product Page] Failed to fetch from CMS', {
+      locale,
+      variant,
       tags: [
         GROUP.PRODUCT_BUILD,
         PAGE.PRODUCT,
-        SOURCE.COSMIC,
+        SOURCE.CMS,
         OPERATION.FETCH_PRODUCT,
         STATUS.ERROR,
       ],
-      source: LOG_SOURCE.COSMIC,
+      source: LOG_SOURCE.CMS,
       operation: 'getProductPageData',
       metadata: {
         ...context,
@@ -393,7 +392,7 @@ export const getProductPageData = async ({
 ```typescript
 // ✅ Good: High cardinality in metadata
 logger.info('[Product Page] Fetched', {
-  market: alpha2,
+  locale,
   tags: [PAGE.PRODUCT, STATUS.SUCCESS],
   metadata: { productSlug, sku, userId, durationMs },
 })
@@ -411,7 +410,7 @@ logger.info('[Product Page] Fetched', {
 | Level   | Use For                      | Example                            |
 | ------- | ---------------------------- | ---------------------------------- |
 | `debug` | Verbose info for debugging   | Variable values, flow tracing      |
-| `info`  | Normal operations            | "Cosmic fetch completed"           |
+| `info`  | Normal operations            | "CMS fetch completed"              |
 | `warn`  | Unexpected but handled       | "Product not found, returning 404" |
 | `error` | Failures requiring attention | "API call failed after retries"    |
 
@@ -424,9 +423,9 @@ logger.info('[Fetch] Building URL')
 logger.info('[Fetch] Sending request')
 
 // ✅ Good: Log meaningful events
-logger.info('[Product Page] Cosmic fetch completed', {
-  market: alpha2,
-  tags: [PAGE.PRODUCT, SOURCE.COSMIC, STATUS.SUCCESS],
+logger.info('[Product Page] CMS fetch completed', {
+  locale,
+  tags: [PAGE.PRODUCT, SOURCE.CMS, STATUS.SUCCESS],
   metadata: { productSlug, variationCount: skus.length, durationMs },
 })
 ```
@@ -443,8 +442,8 @@ try {
 } catch (error) {
   // ✅ Good: Include error object
   logger.error('[Product Page] Failed to fetch', {
-    market: alpha2,
-    tags: [PAGE.PRODUCT, SOURCE.COSMIC, STATUS.ERROR],
+    locale,
+    tags: [PAGE.PRODUCT, SOURCE.CMS, STATUS.ERROR],
     metadata: { productSlug },
     error, // Serialized to: name, message, stack, httpStatus, rawResponse
   })
@@ -462,11 +461,11 @@ Use `createRetryLogger` for operations with retry logic:
 ```typescript
 import { createRetryLogger } from '@/lib/build/create-retry-logger'
 
-const onRetryEvent = createRetryLogger({ alpha2 })
+const onRetryEvent = createRetryLogger({ locale })
 
-await retryWithBackoff(() => cosmic.getProductData({ productSlug }), {
+await retryWithBackoff(() => cms.getProductData({ productSlug }), {
   shouldRetry: shouldRetryServerErrors,
-  operationName: `cosmic:getProduct:${productSlug}`,
+  operationName: `cms:getProduct:${productSlug}`,
   onRetryEvent, // Logs retry:attempt, retry:success, retry:exhausted
 })
 ```
@@ -515,8 +514,8 @@ export const GROUP = {
 ## Checklist
 
 - [ ] Log message starts with `[Context]` prefix in Title Case
-- [ ] `market` parameter used (Alpha2 code) when country context is available
-- [ ] `modeSlug` parameter used when mode context is available
+- [ ] `locale` parameter used when locale context is available
+- [ ] `variant` parameter used when variant context is available
 - [ ] Tags follow correct order: group → page → source → operation → retry/action → status
 - [ ] Status tag is LAST in the tags array
 - [ ] Using `logger.tags.*` constants (no hardcoded tag strings)

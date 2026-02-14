@@ -159,14 +159,14 @@ try {
 
 ```typescript
 // ❌ Bad: Non-null assertion can crash at runtime
-const hydraToken = user.token!
+const authToken = user.token!
 const containerWidth = textRef.current.parentElement!.offsetWidth
 
 // ✅ Good: Explicit null check
 if (!user.token) {
   throw new Error('User must be authenticated')
 }
-const hydraToken = user.token
+const authToken = user.token
 
 // ✅ Good: Optional chaining with fallback
 const containerWidth = textRef.current?.parentElement?.offsetWidth ?? 0
@@ -253,7 +253,7 @@ const handleState = (state: LoadingState) => {
 ```typescript
 // ❌ Bad: Defaults hide missing config
 const clientToken = process.env.DATADOG_TOKEN || ''
-const baseUrl = process.env.HYDRA_URL || 'hydra.default.com'
+const baseUrl = process.env.API_BASE_URL || 'api.default.com'
 
 // ❌ Bad: Environment-based conditional logic
 const verbose = process.env.NODE_ENV === 'development'
@@ -265,10 +265,10 @@ if (!process.env.DATADOG_TOKEN) {
 const clientToken = process.env.DATADOG_TOKEN
 
 // ✅ Good: Explicit feature flags (not environment names)
-if (!process.env.MIXPANEL_VERBOSE_LOGGING) {
-  throw new Error('MIXPANEL_VERBOSE_LOGGING is not set')
+if (!process.env.VERBOSE_LOGGING) {
+  throw new Error('VERBOSE_LOGGING is not set')
 }
-const verbose = process.env.MIXPANEL_VERBOSE_LOGGING === 'true'
+const verbose = process.env.VERBOSE_LOGGING === 'true'
 
 // ✅ Good: Flat config matching env var names
 const config = {
@@ -281,8 +281,8 @@ const config = {
 
 ```typescript
 // ❌ Bad: Magic strings
-if (urlAlpha3 === 'unsupported' || urlAlpha3 === 'reset')
-if (urlAlpha3 === 'c' || urlAlpha3 === 'e')
+if (urlSegment === 'unsupported' || urlSegment === 'reset')
+if (urlSegment === 'c' || urlSegment === 'e')
 
 // ✅ Good: Named constants
 const ROUTE_SEGMENTS = {
@@ -292,7 +292,7 @@ const ROUTE_SEGMENTS = {
   RESET: 'reset',
 } as const
 
-if (urlAlpha3 === ROUTE_SEGMENTS.UNSUPPORTED || urlAlpha3 === ROUTE_SEGMENTS.RESET)
+if (urlSegment === ROUTE_SEGMENTS.UNSUPPORTED || urlSegment === ROUTE_SEGMENTS.RESET)
 ```
 
 ## No Nested Ternaries

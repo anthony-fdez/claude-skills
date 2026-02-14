@@ -135,7 +135,7 @@ const hasMultipleVariations = (variations?.length ?? 0) > 1
 useEffect(() => {
   if (isCartOpen) {
     gtm.viewCart(currentItems)
-    mixpanelService.trackEvent(MixpanelEvent.VIEW_CART, { ... })
+    analyticsService.track(AnalyticsEvent.VIEW_CART, { ... })
   }
 }, [isCartOpen])
 
@@ -143,7 +143,7 @@ useEffect(() => {
 const handleOpenCart = () => {
   setApp({ isCartOpen: true })
   gtm.viewCart(currentItems)
-  mixpanelService.trackEvent(MixpanelEvent.VIEW_CART, { ... })
+  analyticsService.track(AnalyticsEvent.VIEW_CART, { ... })
 }
 ```
 
